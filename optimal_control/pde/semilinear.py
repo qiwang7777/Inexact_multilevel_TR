@@ -8,19 +8,125 @@ from ..geometry import (element_geometry, triangle_quadrature,
                         assemble_control_load, get_stiffness)
 
 
-def assemble_nonlinear_terms(mesh,u):
-    areas, _ = element_geometry(mesh)
-    bary, weights = triangle_quadrature()
+def _nonlinear_fe_cache(mesh):
+    """Cache FE quadrature and sparse Jacobian structure."""
+
+    cache = getattr(mesh, '_nonlinear_fe_cache', None)
+
+    if cache is not None:
+        return cache
+
     E = mesh.elements
+    n = len(mesh.nodes)
+
+    bary, weights = triangle_quadrature()
+
+    wb = weights[:, None] * bary
+
+    wbb = (
+        weights[:, None, None]
+        * bary[:, :, None]
+        * bary[:, None, :]
+    )
+
+    rows = np.repeat(E, 3, axis=1).ravel()
+    cols = np.tile(E, (1, 3)).ravel()
+
+    key = rows.astype(np.int64) * n + cols
+
+    keys, inverse = np.unique(key, return_inverse=True)
+
+    indptr = np.concatenate((
+        [0],
+        np.cumsum(
+            np.bincount(keys // n, minlength=n),
+            dtype=np.int64
+        )
+    ))
+
+    csr_indices = (keys % n).astype(np.int32)
+
+    cache = (
+        wb,
+        wbb,
+        inverse,
+        csr_indices,
+        indptr,
+        len(keys)
+    )
+
+    mesh._nonlinear_fe_cache = cache
+
+    return cache
+
+
+def nonlinear_load(mesh, u):
+    """Compute (u^3, phi) without assembling the Jacobian."""
+
+    areas, _ = element_geometry(mesh)
+
+    wb, _, _, _, _, _ = _nonlinear_fe_cache(mesh)
+
+    E = mesh.elements
+
+    bary, _ = triangle_quadrature()
+
     uq = u[E] @ bary.T
-    Nloc = np.einsum('eq,q,qi,e->ei', uq**3, weights, bary, areas)
-    N = np.bincount(E.ravel(), weights=Nloc.ravel(), minlength=len(mesh.nodes))
-    Jloc = np.einsum('eq,q,qi,qj,e->eij',3.0*uq**2,weights,bary,bary,areas)
-    J = sp.coo_matrix((Jloc.ravel(),
-                       (np.repeat(E,3,axis=1).ravel(),
-                        np.tile(E,(1,3)).ravel())),
-                      shape=(len(mesh.nodes),)*2).tocsr()
-    return N,J
+
+    nloc = areas[:, None] * (uq**3 @ wb)
+
+    return np.bincount(
+        E.ravel(),
+        weights=nloc.ravel(),
+        minlength=len(mesh.nodes)
+    )
+
+
+def assemble_nonlinear_terms(mesh, u):
+    """Assemble nonlinear residual and Jacobian using cached structure."""
+
+    areas, _ = element_geometry(mesh)
+
+    wb, wbb, inverse, cols, indptr, nnz = (
+        _nonlinear_fe_cache(mesh)
+    )
+
+    E = mesh.elements
+
+    bary, _ = triangle_quadrature()
+
+    uq = u[E] @ bary.T
+
+    # Nonlinear load
+    nloc = areas[:, None] * (uq**3 @ wb)
+
+    N = np.bincount(
+        E.ravel(),
+        weights=nloc.ravel(),
+        minlength=len(mesh.nodes)
+    )
+
+    # Numerical Jacobian values
+    jloc = areas[:, None, None] * np.einsum(
+        'eq,qij->eij',
+        3.0 * uq**2,
+        wbb,
+        optimize=True
+    )
+
+    # Assemble directly into cached CSR structure
+    jdata = np.bincount(
+        inverse,
+        weights=jloc.ravel(),
+        minlength=nnz
+    )
+
+    J = sp.csr_matrix(
+        (jdata, cols, indptr),
+        shape=(len(mesh.nodes), len(mesh.nodes))
+    )
+
+    return N, J
 
 
 def solve_state(mesh,z,tol=1e-8,max_newton=30,verbose=False,u0=None,
