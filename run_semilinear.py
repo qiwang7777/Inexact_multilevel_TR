@@ -43,6 +43,8 @@ def main():
     parser.add_argument('--max-outer', type=int, default=8)
     parser.add_argument('--max-inner', type=int, default=4000)
     parser.add_argument('--max-coarse-inner', type=int, default=1)
+    parser.add_argument('--kappa-g', type=float, default=0.1,
+                        help='Certified dynamic gradient forcing parameter')
     parser.add_argument('--cg-maxiter', type=int, default=50)
     parser.add_argument('--cg-rtol', type=float, default=1e-3)
     parser.add_argument('--kappa-ml', type=float, default=0.15)
@@ -70,6 +72,8 @@ def main():
         parser.error('--smooth-only is a diagnostic for --fixed-mu; full mode includes MY.')
     if args.beta < 0 or args.alpha <= 0:
         parser.error('beta must be nonnegative and alpha positive')
+    if not (0 < args.kappa_g < 1):
+        parser.error('--kappa-g must be in (0,1)')
     if args.cg_maxiter <= 0 or args.max_inner <= 0 or args.max_outer <= 0:
         parser.error('Iteration limits must be positive')
     if not (args.eps > args.tau_fixed > 0):
@@ -83,6 +87,7 @@ def main():
           else '\n========== SMOOTH-ONLY DIAGNOSTIC ==========')
     print('Objective: f(z) + M_mu[beta*||z||_1 + I_{[-25,25]}](z)')
     print('PDE reduced Hessian:', args.hessian_mode)
+    print('Gradient error: discrete PDE-residual certificate, kappa_g:', args.kappa_g)
     print('Moreau regularization: enabled' if not args.smooth_only else
           'Moreau regularization: DISABLED (diagnostic)')
     print(f'beta={args.beta}, alpha={args.alpha}')
@@ -96,6 +101,7 @@ def main():
                       lbfgs_memory=args.lbfgs_memory,
                       lbfgs_cg_maxiter=args.cg_maxiter,
                       lbfgs_cg_rtol=args.cg_rtol,
+                      kappa_g=args.kappa_g,
                       kappa_ml=args.kappa_ml,
                       kappa_et=args.kappa_et,
                       max_inner=args.max_inner,
