@@ -92,7 +92,7 @@ def main():
     p.add_argument('--mu',type=float,default=None,help='If set: solve only the fixed-mu smoothed problem')
     p.add_argument('--tau',type=float,default=.002,help='Fixed-mu inner tolerance')
     p.add_argument('--alpha',type=float,default=1e-4)
-    p.add_argument('--beta',type=float,default=0.0)
+    p.add_argument('--beta',type=float,default=1e-2)
     p.add_argument('--mu0',type=float,default=.4)
     p.add_argument('--tau0',type=float,default=.008)
     p.add_argument('--eps',type=float,default=.001)
