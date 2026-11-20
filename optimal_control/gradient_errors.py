@@ -4,7 +4,7 @@ A certificate is for the EXACTLY DISCRETIZED state/adjoint equations.
 It does not bound spatial discretization error or roundoff error.
 """
 import numpy as np
-from .geometry import element_geometry, get_stiffness, assemble_control_load
+from .geometry import element_geometry, get_stiffness, assemble_control_load, triangle_quadrature
 
 # Poincare on (0,1)^2: 2*pi**2 ||v||_L2**2 <= ||grad v||_L2**2.
 # Consistent P1 mass M >= W/4, so K >= (pi**2/2) W (on H01 interior).
@@ -46,9 +46,16 @@ def semilinear_gradient_certificate(mesh, z, u, p, w_value, J=None):
     if len(I) == 0:
         return 0.0, 0.0, 0.0
     K = get_stiffness(mesh)
-    nonlinear, jacobian = assemble_nonlinear_terms(mesh, u)
+    #nonlinear, jacobian = assemble_nonlinear_terms(mesh, u)
     if J is None:
-        J = jacobian
+        nonlinear, J = assemble_nonlinear_terms(mesh, u)
+    else:
+        areas,_ = element_geometry(mesh)
+        bary, weights = triangle_quadrature()
+        E = mesh.elements
+        uq = u[E] @ bary.T
+        nonlinear_local = np.einsum('eq,q,qi,e->ei',uq**3, weights, bary, areas)
+        nonlinear = np.bincount(E.ravel(), weights=nonlinear_local.ravel(),minlength=len(mesh.nodes))
     ru = (K@u + nonlinear - assemble_control_load(mesh, z))[I]
     rp = ((K+J)@p - assemble_p1_load(mesh, u, w_value))[I]
     dual = lambda r: float(np.sqrt(np.dot(r/w[I], r)))
