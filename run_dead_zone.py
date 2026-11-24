@@ -8,7 +8,7 @@ from dead_zone import Hierarchy, Parameters, solve_nested
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="P1 optimal control with dead-zone penalty")
-    parser.add_argument("--resolutions", default="32,64,128", help="coarse-to-fine n (default 32,64,128)")
+    parser.add_argument("--resolutions", default="64,128,256", help="coarse-to-fine n (default 64,128,256)")
     parser.add_argument("--maxiter", type=int, default=300, help="max iterations per grid")
     parser.add_argument("--tol", type=float, default=1e-7, help="absolute W-gradient-mapping tolerance")
     parser.add_argument("--output", default="dead_zone_results.npz", help="saved NumPy results")
