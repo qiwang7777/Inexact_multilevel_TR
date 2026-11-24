@@ -776,6 +776,10 @@ class IRMTRMoreau:
                 return OuterResult(z_feas,history,False)
             if feas_upper <= eps:
                 return OuterResult(z_feas,history,True)
-            mu *= theta_mu
+            mu_new = mu*theta_mu
+            if not c.smooth_only:
+                v = prox_phi(z,mu,c.beta)
+                z=v+(mu_new/mu)*(z-v)
+            mu=mu_new
             tau *= theta_tau
         return OuterResult(np.clip(z,-25.,25.),history,False)
