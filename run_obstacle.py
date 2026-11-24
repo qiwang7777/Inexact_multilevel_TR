@@ -186,7 +186,7 @@ def run_continuation(solver, z0, *, mu0, tau0, eps, theta_mu,
         if upper<=eps:
             return feasible,z,stages,True
         mu_new=theta_mu*mu
-        z=obstacle_continuation_warm_start(z,psi,mu,mu_new)
+        #z=obstacle_continuation_warm_start(z,psi,mu,mu_new)
         mu=mu_new
         tau*=theta_tau
     return obstacle_prox(z,psi),z,stages,False
