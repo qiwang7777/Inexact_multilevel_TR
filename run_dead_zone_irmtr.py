@@ -173,7 +173,7 @@ def main():
     parser.add_argument('--tau0', type=float, default=.008)
     parser.add_argument('--eps', type=float, default=1e-3)
     parser.add_argument('--theta-mu', type=float, default=.5)
-    parser.add_argument('--theta-tau', type=float, default=.5)
+    parser.add_argument('--theta-tau', type=float, default=1)
     parser.add_argument('--prox-r', type=float, default=1.)
     parser.add_argument('--max-inner', type=int, default=4000)
     parser.add_argument('--max-coarse-inner', type=int, default=1)
