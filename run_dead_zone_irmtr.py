@@ -170,7 +170,7 @@ def main():
     parser.add_argument('--beta', type=float, default=1e-2)
     parser.add_argument('--c', type=float, default=2.)
     parser.add_argument('--mu0', type=float, default=.4)
-    parser.add_argument('--tau0', type=float, default=.008)
+    parser.add_argument('--tau0', type=float, default=9e-4)
     parser.add_argument('--eps', type=float, default=1e-3)
     parser.add_argument('--theta-mu', type=float, default=.5)
     parser.add_argument('--theta-tau', type=float, default=0.999)
