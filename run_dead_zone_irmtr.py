@@ -161,8 +161,8 @@ def save_csv(path, rows, keys=None):
 def main():
     parser = argparse.ArgumentParser(description='TRUE IRMTR: P1 dead-zone elliptic PDE control')
     parser.add_argument('--solver', choices=['single','multi','both'], default='both')
-    parser.add_argument('--base-n', type=int, default=32,
-                        help='three meshes n,2n,4n (default: 32,64,128)')
+    parser.add_argument('--base-n', type=int, default=64,
+                        help='three meshes n,2n,4n (default: 64,128,256)')
     parser.add_argument('--smoke', action='store_true',
                         help='tiny 2,4,8 mesh for integration checking')
     parser.add_argument('--self-test', action='store_true')
