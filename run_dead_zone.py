@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Example: P1 dead-zone control, using the repository's actual IRMTR core.
 
-Run from the root of qiwang7777/Inexact_multilevel_TR (after applying patch):
-
   python run_dead_zone_irmtr.py --self-test
   python run_dead_zone_irmtr.py --smoke --solver both --plot-dir dead_zone_smoke
   python run_dead_zone_irmtr.py --solver both --plots --plot-dir dead_zone_results
