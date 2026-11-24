@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import numpy as np
-from dead_zone import Hierarchy, Parameters, solve_nested
+from optimal_control.dead_zone import Hierarchy, Parameters, solve_nested
 
 
 def main() -> None:
