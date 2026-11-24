@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """P1 obstacle indicator benchmark using ORIGINAL IRMTRMoreau.irmtr.
 
-Add these files to https://github.com/qiwang7777/Inexact_multilevel_TR
-and run from repository root:
-
  python3 run_obstacle_irmtr.py --self-test
  python3 run_obstacle_irmtr.py --smoke --solver both
  python3 run_obstacle_irmtr.py --solver both --base-n 64 --plots
