@@ -179,7 +179,7 @@ def main():
     parser.add_argument('--max-coarse-inner', type=int, default=1)
     parser.add_argument('--max-outer', type=int, default=8)
     parser.add_argument('--fine-every', type=int, default=5)
-    parser.add_argument('--kappa-ml', type=float, default=.15)
+    parser.add_argument('--kappa-ml', type=float, default=.5)
     parser.add_argument('--kappa-et', type=float, default=.2)
     parser.add_argument('--kappa-g', type=float, default=.1)
     parser.add_argument('--curvature', type=float, default=.1)
