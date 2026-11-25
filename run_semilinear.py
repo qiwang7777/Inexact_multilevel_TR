@@ -37,7 +37,7 @@ def main():
                         help='Initial inner tolerance; decreases with theta-mu; must be < eps. '
                              '--tau0 accepted as a backward-compatible alias')
     parser.add_argument('--eps', type=float, default=1e-4)
-    parser.add_argument('--theta-mu', type=float, default=0.9,
+    parser.add_argument('--theta-mu', type=float, default=0.5,
                         help='Decrease mu and tau each outer stage')
     parser.add_argument('--prox-r', type=float, default=1.0)
     parser.add_argument('--max-outer', type=int, default=8)
