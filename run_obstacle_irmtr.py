@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-"""P1 obstacle indicator benchmark using ORIGINAL IRMTRMoreau.irmtr.
 
-Add these files to https://github.com/qiwang7777/Inexact_multilevel_TR
-and run from repository root:
+"""P1 obstacle indicator benchmark using ORIGINAL IRMTRMoreau.irmtr.
 
  python3 run_obstacle_irmtr.py --self-test
  python3 run_obstacle_irmtr.py --smoke --solver both
@@ -35,7 +32,7 @@ from optimal_control.obstacle_regularization import (
     obstacle_continuation_warm_start,
 )
 from optimal_control.obstacle_plots import make_plots
-from obstacle_my_metrics import obstacle_metrics
+from optimal_control.obstacle_my_metrics import obstacle_metrics
 
 
 def native(x):
